@@ -29,7 +29,7 @@ public class GithubReposService implements ReposService {
         final String address = getAddressForUser(username);
         try {
             ResponseEntity<GithubRepo[]> responseEntity = restTemplate.getForEntity(address, GithubRepo[].class);
-            if (responseEntity.getStatusCode().isError() || responseEntity.getBody() == null) {
+            if (responseEntity.getBody() == null) {
                 return Optional.empty();
             }
             return Optional.of(Arrays.stream(responseEntity.getBody()).collect(Collectors.toList()));
@@ -37,7 +37,6 @@ public class GithubReposService implements ReposService {
         {
             return Optional.empty();
         }
-
     }
 
     private String getAddressForUser(String username) {

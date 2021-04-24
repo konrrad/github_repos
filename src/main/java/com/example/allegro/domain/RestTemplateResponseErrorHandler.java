@@ -9,6 +9,7 @@ import java.io.IOException;
 public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
     @Override
     public boolean hasError(ClientHttpResponse response) throws IOException {
+
         return response.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR;
 
     }
@@ -20,11 +21,12 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
         } else if (response.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR) {
             // handle CLIENT_ERROR
             if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                System.out.println("ERRRRRRRRRRRRRRr");
                 throw new UserNotFoundException();
             }
+
+
         }
 
-
     }
-
 }

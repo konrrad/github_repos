@@ -53,7 +53,7 @@ public class GithubReposServiceTests {
     public void shouldRespondToError() {
         //given
         mockRestServiceServer.expect(ExpectedCount.once(),
-                requestTo(this.requestAddress)).andRespond(withStatus(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body("Cannot find user"));
+                requestTo(this.requestAddress)).andRespond(withStatus(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("Cannot find user"));
 
         //when
         var response = githubReposService.getReposForUser(user);
