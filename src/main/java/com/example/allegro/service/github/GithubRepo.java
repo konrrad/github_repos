@@ -1,4 +1,4 @@
-package com.example.allegro.domain;
+package com.example.allegro.service.github;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;

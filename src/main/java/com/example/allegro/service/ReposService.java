@@ -1,4 +1,6 @@
-package com.example.allegro.domain;
+package com.example.allegro.service;
+
+import com.example.allegro.service.github.GithubRepo;
 
 import java.util.List;
 import java.util.Optional;

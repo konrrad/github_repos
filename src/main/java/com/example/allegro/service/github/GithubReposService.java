@@ -1,6 +1,9 @@
-package com.example.allegro.domain;
+package com.example.allegro.service.github;
 
 
+import com.example.allegro.service.ReposService;
+import com.example.allegro.service.RestTemplateResponseErrorHandler;
+import com.example.allegro.service.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
@@ -8,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,7 +40,9 @@ public class GithubReposService implements ReposService {
                 responseEntity = restTemplate.getForEntity(nextPageURL, GithubRepo[].class);
                 githubReposArrays.add(responseEntity.getBody());
             }
-            return Optional.of(githubReposArrays.stream().flatMap(Arrays::stream).collect(Collectors.toList()));
+//            return Optional.of(githubReposArrays.stream().flatMap(Arrays::stream).collect(Collectors.toList()));
+//            return githubReposArrays.stream().map(Optional::ofNullable).flatMap().collect(Collectors.toList());
+            return Optional.of(githubReposArrays.stream().filter(Objects::nonNull).flatMap(Arrays::stream).collect(Collectors.toList()));
         } catch (UserNotFoundException e) {
             return Optional.empty();
         }
@@ -62,6 +64,7 @@ public class GithubReposService implements ReposService {
 
     private Stream<GithubLink> mapToGithubLink(ResponseEntity<GithubRepo[]> responseEntity) {
         final HttpHeaders headers = responseEntity.getHeaders();
+        if (headers.get(LINK_HEADER) == null) return Stream.empty();
         return headers.get(LINK_HEADER)
                 .stream()
                 .flatMap(str -> Arrays.stream(str.split(",")))

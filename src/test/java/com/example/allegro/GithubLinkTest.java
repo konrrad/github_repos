@@ -1,6 +1,6 @@
 package com.example.allegro;
 
-import com.example.allegro.domain.GithubLink;
+import com.example.allegro.service.github.GithubLink;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

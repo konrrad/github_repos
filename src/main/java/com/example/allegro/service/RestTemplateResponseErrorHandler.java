@@ -1,4 +1,4 @@
-package com.example.allegro.domain;
+package com.example.allegro.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;

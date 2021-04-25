@@ -1,8 +1,8 @@
 package com.example.allegro.api;
 
-import com.example.allegro.domain.GithubCountingService;
-import com.example.allegro.domain.GithubRepo;
-import com.example.allegro.domain.ReposService;
+import com.example.allegro.service.github.GithubCountingService;
+import com.example.allegro.service.github.GithubRepo;
+import com.example.allegro.service.ReposService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
