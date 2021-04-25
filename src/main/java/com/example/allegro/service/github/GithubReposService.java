@@ -36,12 +36,9 @@ public class GithubReposService implements ReposService {
             githubReposArrays.add(responseEntity.getBody());
             while (hasNextPage(responseEntity)) {
                 var nextPageURL = getLinkForNextPage(responseEntity);
-                System.out.println(nextPageURL);
                 responseEntity = restTemplate.getForEntity(nextPageURL, GithubRepo[].class);
                 githubReposArrays.add(responseEntity.getBody());
             }
-//            return Optional.of(githubReposArrays.stream().flatMap(Arrays::stream).collect(Collectors.toList()));
-//            return githubReposArrays.stream().map(Optional::ofNullable).flatMap().collect(Collectors.toList());
             return Optional.of(githubReposArrays.stream().filter(Objects::nonNull).flatMap(Arrays::stream).collect(Collectors.toList()));
         } catch (UserNotFoundException e) {
             return Optional.empty();

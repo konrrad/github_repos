@@ -21,7 +21,6 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
         } else if (response.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR) {
             // handle CLIENT_ERROR
             if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-                System.out.println("ERRRRRRRRRRRRRRr");
                 throw new UserNotFoundException();
             }
 
