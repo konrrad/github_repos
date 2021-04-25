@@ -1,20 +1,25 @@
 package com.example.allegro.domain;
 
 
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
 public class GithubReposService implements ReposService {
     public static final String GITHUB_API = "https://api.github.com";
+    private static final String LINK_HEADER = "Link";
 
     private final RestTemplate restTemplate;
 
@@ -25,15 +30,14 @@ public class GithubReposService implements ReposService {
 
     public Optional<List<GithubRepo>> getReposForUser(String username) {
         final String address = getAddressForUser(username);
-        List<GithubRepo[]> githubReposArrays=new ArrayList<>();
+        List<GithubRepo[]> githubReposArrays = new ArrayList<>();
         try {
-            ResponseEntity<GithubRepo[]> responseEntity=restTemplate.getForEntity(address, GithubRepo[].class);
+            ResponseEntity<GithubRepo[]> responseEntity = restTemplate.getForEntity(address, GithubRepo[].class);
             githubReposArrays.add(responseEntity.getBody());
-            while (hasNextPage(responseEntity))
-            {
-                var link=getLinkForNextPage(responseEntity);
-                System.out.println(link);
-                responseEntity=restTemplate.getForEntity(link.url,GithubRepo[].class);
+            while (hasNextPage(responseEntity)) {
+                var nextPageURL = getLinkForNextPage(responseEntity);
+                System.out.println(nextPageURL);
+                responseEntity = restTemplate.getForEntity(nextPageURL, GithubRepo[].class);
                 githubReposArrays.add(responseEntity.getBody());
             }
             return Optional.of(githubReposArrays.stream().flatMap(Arrays::stream).collect(Collectors.toList()));
@@ -42,21 +46,26 @@ public class GithubReposService implements ReposService {
         }
     }
 
-    private boolean hasNextPage(ResponseEntity<GithubRepo[]> responseEntity)
-    {
-        return responseEntity.getHeaders().containsKey("Link")&&
-                responseEntity.getHeaders().get("Link")!=null&&
-                Objects.requireNonNull(responseEntity.getHeaders().get("Link")).stream().anyMatch(s->s.contains("next"));
+    private boolean hasNextPage(ResponseEntity<GithubRepo[]> responseEntity) {
+
+        return mapToGithubLink(responseEntity)
+                .anyMatch(GithubLink::isNext);
     }
 
-    private GithubLink getLinkForNextPage(ResponseEntity<GithubRepo[]> responseEntity)
-    {
-        return responseEntity.getHeaders().get("Link")
-                .stream()
-                .flatMap(str-> Arrays.stream(str.split(",")))
-                .map(GithubLink::new)
+    private String getLinkForNextPage(ResponseEntity<GithubRepo[]> responseEntity) {
+        return mapToGithubLink(responseEntity)
                 .filter(GithubLink::isNext)
-                .findFirst().get();
+                .map(link -> link.url)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Link should contain a link to the next page."));
+    }
+
+    private Stream<GithubLink> mapToGithubLink(ResponseEntity<GithubRepo[]> responseEntity) {
+        final HttpHeaders headers = responseEntity.getHeaders();
+        return headers.get(LINK_HEADER)
+                .stream()
+                .flatMap(str -> Arrays.stream(str.split(",")))
+                .map(GithubLink::new);
     }
 
     private String getAddressForUser(String username) {

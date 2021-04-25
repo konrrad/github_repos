@@ -6,32 +6,25 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.client.ResponseCreator;
-import org.springframework.util.LinkedMultiValueMap;
 
-import java.io.IOException;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest(GithubReposService.class)
 public class GithubReposServiceTests {
@@ -90,14 +83,14 @@ public class GithubReposServiceTests {
     @Test
     @Disabled
     public void shouldGetForMultiplePages() throws JsonProcessingException {
-        HttpHeaders headers=new HttpHeaders();
-        headers.set("Link","<https://api.github.com/user/69631/repos?page=3>; rel=\"next\"");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Link", "<https://api.github.com/user/69631/repos?page=3>; rel=\"next\"");
 //        mockRestServiceServer.expect(ExpectedCount.manyTimes(),method(HttpMethod.GET))
 //                .andRespond(withStatus(HttpStatus.OK).headers(headers).contentType(MediaType.APPLICATION_JSON).body(mapper.writeValueAsString(Collections.emptyList())));
 
 //        mockRestServiceServer.expect(ExpectedCount.manyTimes(),method(HttpMethod.GET)).andRespond();
 
-        var response=githubReposService.getReposForUser("example");
+        var response = githubReposService.getReposForUser("example");
         mockRestServiceServer.verify();
         assertTrue(response.isPresent());
     }

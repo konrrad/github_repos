@@ -16,10 +16,11 @@ public class GithubLink
     private void parseLink(String link) {
         String[] parts=link.split(";");
         String bad_rel=parts[1];
-        rel=parts[1].split("=")[1].replaceAll("\"","");
+        rel=bad_rel.split("=")[1].replaceAll("\"","");
         String bad_url=parts[0];
         url=bad_url.substring(bad_url.indexOf("<")+1,bad_url.indexOf(">"));
     }
+
 
     public boolean isNext()
     {
